@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>reflec</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:'Outfit',sans-serif;
+  color:white;
+  overflow:hidden;
+  background: radial-gradient(circle at center,#0f172a,#020617);
+  cursor:none;
+}
+
+/* PARTICLES */
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:0;
+}
+
+/* GLASS */
+.glass{
+  position:relative;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(25px);
+  border:0.5px solid rgba(59,130,246,0.25);
+  box-shadow:
+    0 0 25px rgba(59,130,246,0.15),
+    inset 0 0 20px rgba(255,255,255,0.05);
+  transition:.4s;
+  overflow:hidden;
+}
+
+.glass:hover{
+  transform:translateY(-6px) scale(1.05);
+  box-shadow:
+    0 0 40px rgba(59,130,246,0.25),
+    inset 0 0 25px rgba(255,255,255,0.08);
+}
+
+/* SCRIBBLES */
+.scribble{
+  position:absolute;
+  inset:0;
+  opacity:.08;
+  pointer-events:none;
+}
+
+.scribble path{
+  stroke:#3b82f6;
+  stroke-width:1;
+  fill:none;
+  stroke-dasharray:200;
+  stroke-dashoffset:200;
+  animation:idleFlow 6s linear infinite;
+}
+
+.glass:hover .scribble{
+  opacity:.4;
+}
+
+.glass:hover .scribble path{
+  animation:draw 2s linear infinite;
+}
+
+@keyframes idleFlow{
+  to{stroke-dashoffset:0;}
+}
+@keyframes draw{
+  to{stroke-dashoffset:-200;}
+}
+
+/* TEXT */
+.label{
+  font-family:'JetBrains Mono';
+  font-size:10px;
+  letter-spacing:.15em;
+  color:rgba(255,255,255,0.4);
+}
+.title{
+  font-size:18px;
+  letter-spacing:.2em;
+}
+
+/* PRESENCE */
+.presence{
+  font-family:'JetBrains Mono';
+  font-size:11px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+}
+
+.dot{
+  width:6px;height:6px;border-radius:50%;
+}
+
+.typing span{
+  width:4px;height:4px;background:#3b82f6;
+  border-radius:50%;
+  display:inline-block;
+  animation:blink 1.4s infinite;
+}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+
+@keyframes blink{
+  0%,80%,100%{opacity:.2;}
+  40%{opacity:1;}
+}
+
+/* CURSOR */
+.cursor{
+  position:fixed;
+  width:18px;height:18px;
+  border:1px solid rgba(59,130,246,0.6);
+  border-radius:50%;
+  pointer-events:none;
+}
+.cursor-trail{
+  position:fixed;
+  width:60px;height:60px;
+  background:rgba(59,130,246,0.08);
+  border-radius:50%;
+  filter:blur(20px);
+  pointer-events:none;
+}
+</style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen">
+
+<canvas id="particles"></canvas>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="trail"></div>
+
+<div class="max-w-xl w-full space-y-8 relative z-10">
+
+<div class="text-center space-y-3">
+<h1 class="text-4xl">reflec</h1>
+
+<div class="presence">
+<span id="dot" class="dot bg-green-400"></span>
+<span id="presenceText">active</span>
+<span id="typing" class="typing hidden">
+<span></span><span></span><span></span>
+</span>
+<span id="time" class="text-gray-500"></span>
+</div>
+</div>
+
+<div class="space-y-4">
+
+<a href="#" class="glass p-6 rounded-xl block link">
+<svg class="scribble" viewBox="0 0 400 100">
+<path d="M10 60 Q 150 10 300 70 T 390 50"/>
+</svg>
+<div class="label">VAULT</div>
+<div class="title">PAYPAL</div>
+</a>
+
+<a href="#" class="glass p-6 rounded-xl block link">
+<svg class="scribble" viewBox="0 0 400 100">
+<path d="M20 80 Q 200 20 350 60"/>
+</svg>
+<div class="label">PORTAL</div>
+<div class="title">ROBLOX</div>
+</a>
+
+</div>
+</div>
+
+<script>
+/* PARTICLES (RESTORED) */
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let particles=[];
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    s:Math.random()*2,
+    sp:Math.random()*0.5
+  });
+}
+
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.s,0,Math.PI*2);
+    ctx.fillStyle='rgba(59,130,246,0.6)';
+    ctx.fill();
+
+    p.x-=p.sp;
+    p.y+=p.sp;
+
+    if(p.x<0||p.y>canvas.height){
+      p.x=Math.random()*canvas.width;
+      p.y=0;
+    }
+  });
+
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+/* PRESENCE + DISCORD */
+const text=document.getElementById('presenceText');
+const dot=document.getElementById('dot');
+
+const ID="1489706305605337109";
+
+async function discord(){
+  try{
+    const r=await fetch(`https://api.lanyard.rest/v1/users/${ID}`);
+    const j=await r.json();
+    const d=j.data;
+
+    if(d.activities.length){
+      text.textContent=d.activities[0].name;
+      dot.className="dot bg-purple-400";
+    }
+  }catch{}
+}
+setInterval(discord,15000);
+discord();
+
+/* TIME */
+setInterval(()=>{
+  const d=new Date();
+  document.getElementById('time').textContent=
+    d.getHours()+":"+d.getMinutes().toString().padStart(2,'0');
+},1000);
+
+/* CURSOR */
+const cursor=document.getElementById('cursor');
+const trail=document.getElementById('trail');
+let mx=0,my=0,px=0,py=0,tx=0,ty=0;
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+});
+
+function loop(){
+  px+=(mx-px)*0.2;
+  py+=(my-py)*0.2;
+  tx+=(mx-tx)*0.08;
+  ty+=(my-ty)*0.08;
+
+  cursor.style.left=px+'px';
+  cursor.style.top=py+'px';
+  trail.style.left=tx+'px';
+  trail.style.top=ty+'px';
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+
+</body>
+</html>
