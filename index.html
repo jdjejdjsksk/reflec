@@ -18,13 +18,17 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Framer Motion CDN -->
-    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <!-- Framer Motion CDN (UMD) -->
+    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
     
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
+        // Framer Motion usually exports to window.Motion or window.FramerMotion
+        // We'll check for both to be safe
+        window.FramerMotion = window.FramerMotion || window.Motion;
+        
         tailwind.config = {
             theme: {
                 extend: {
