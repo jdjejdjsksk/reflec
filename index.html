@@ -1,275 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>reflec</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-
-<style>
-body{
-  margin:0;
-  font-family:'Outfit',sans-serif;
-  color:white;
-  overflow:hidden;
-  background: radial-gradient(circle at center,#0f172a,#020617);
-  cursor:none;
-}
-
-/* PARTICLES */
-canvas{
-  position:fixed;
-  inset:0;
-  z-index:0;
-}
-
-/* GLASS */
-.glass{
-  position:relative;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(25px);
-  border:0.5px solid rgba(59,130,246,0.25);
-  box-shadow:
-    0 0 25px rgba(59,130,246,0.15),
-    inset 0 0 20px rgba(255,255,255,0.05);
-  transition:.4s;
-  overflow:hidden;
-}
-
-.glass:hover{
-  transform:translateY(-6px) scale(1.05);
-  box-shadow:
-    0 0 40px rgba(59,130,246,0.25),
-    inset 0 0 25px rgba(255,255,255,0.08);
-}
-
-/* SCRIBBLES */
-.scribble{
-  position:absolute;
-  inset:0;
-  opacity:.08;
-  pointer-events:none;
-}
-
-.scribble path{
-  stroke:#3b82f6;
-  stroke-width:1;
-  fill:none;
-  stroke-dasharray:200;
-  stroke-dashoffset:200;
-  animation:idleFlow 6s linear infinite;
-}
-
-.glass:hover .scribble{
-  opacity:.4;
-}
-
-.glass:hover .scribble path{
-  animation:draw 2s linear infinite;
-}
-
-@keyframes idleFlow{
-  to{stroke-dashoffset:0;}
-}
-@keyframes draw{
-  to{stroke-dashoffset:-200;}
-}
-
-/* TEXT */
-.label{
-  font-family:'JetBrains Mono';
-  font-size:10px;
-  letter-spacing:.15em;
-  color:rgba(255,255,255,0.4);
-}
-.title{
-  font-size:18px;
-  letter-spacing:.2em;
-}
-
-/* PRESENCE */
-.presence{
-  font-family:'JetBrains Mono';
-  font-size:11px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:6px;
-}
-
-.dot{
-  width:6px;height:6px;border-radius:50%;
-}
-
-.typing span{
-  width:4px;height:4px;background:#3b82f6;
-  border-radius:50%;
-  display:inline-block;
-  animation:blink 1.4s infinite;
-}
-.typing span:nth-child(2){animation-delay:.2s;}
-.typing span:nth-child(3){animation-delay:.4s;}
-
-@keyframes blink{
-  0%,80%,100%{opacity:.2;}
-  40%{opacity:1;}
-}
-
-/* CURSOR */
-.cursor{
-  position:fixed;
-  width:18px;height:18px;
-  border:1px solid rgba(59,130,246,0.6);
-  border-radius:50%;
-  pointer-events:none;
-}
-.cursor-trail{
-  position:fixed;
-  width:60px;height:60px;
-  background:rgba(59,130,246,0.08);
-  border-radius:50%;
-  filter:blur(20px);
-  pointer-events:none;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VortexDev | Roblox Developer Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0B0E14;
+            color: white;
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-border {
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+        .project-card:hover img {
+            filter: grayscale(0);
+            transform: scale(1.05);
+        }
+    </style>
 </head>
+<body class="selection:bg-blue-500/30">
 
-<body class="flex items-center justify-center min-h-screen">
+    <div class="max-w-2xl mx-auto px-6 py-16 space-y-12">
+        
+        <!-- Header -->
+        <header class="text-center space-y-6">
+            <div class="relative inline-block">
+                <div class="w-32 h-32 mx-auto rounded-3xl overflow-hidden neon-border">
+                    <img src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?w=400&auto=format&fit=crop&q=60" alt="Avatar" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500">
+                </div>
+                <div class="absolute -bottom-1 -right-1 bg-green-500 w-5 h-5 rounded-full border-4 border-[#0B0E14]"></div>
+            </div>
 
-<canvas id="particles"></canvas>
+            <div class="space-y-2">
+                <h1 class="text-4xl font-bold tracking-tight">reflec.xyz</h1>
+                <p class="text-blue-400 font-mono text-sm tracking-widest uppercase">Lead Roblox Scripting Engineer</p>
+            </div>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-trail" id="trail"></div>
+            <p class="text-gray-400 text-lg leading-relaxed max-w-sm mx-auto font-light">
+                Architecting high-performance gameplay systems and immersive experiences since 2018.
+            </p>
 
-<div class="max-w-xl w-full space-y-8 relative z-10">
+            <div class="flex justify-center gap-6">
+                <!-- Discord -->
+                <a href="https://discord.com/users/prvtocol" class="text-gray-500 hover:text-indigo-400 transition-all flex flex-col items-center gap-1 group" title="Discord: prvtocol">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span class="text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity">prvtocol</span>
+                </a>
+                <!-- Telegram -->
+                <a href="https://t.me/protecture" class="text-gray-500 hover:text-sky-400 transition-all flex flex-col items-center gap-1 group" title="Telegram: @protecture">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                    <span class="text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity">@protecture</span>
+                </a>
+            </div>
+        </header>
 
-<div class="text-center space-y-3">
-<h1 class="text-4xl">reflec</h1>
+        <!-- Hiring Status -->
+        <div class="glass rounded-3xl p-6 flex items-center justify-between group cursor-pointer border border-blue-500/20">
+            <div class="flex items-center gap-4">
+                <div class="bg-blue-500/10 p-3 rounded-2xl text-blue-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </div>
+                <div>
+                    <h2 class="font-semibold text-lg">Hiring Status: Open</h2>
+                    <p class="text-gray-400 text-sm">Long-term projects & big commissions</p>
+                </div>
+            </div>
+            <svg class="text-gray-600 group-hover:text-blue-400 transition-transform group-hover:translate-x-1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
 
-<div class="presence">
-<span id="dot" class="dot bg-green-400"></span>
-<span id="presenceText">active</span>
-<span id="typing" class="typing hidden">
-<span></span><span></span><span></span>
-</span>
-<span id="time" class="text-gray-500"></span>
-</div>
-</div>
+        <!-- Projects -->
+        <section class="space-y-6">
+            <h3 class="text-xl font-bold px-2 flex items-center gap-2">
+                <span class="text-yellow-500">✦</span> Case Studies
+            </h3>
+            
+            <!-- Project 1 -->
+            <div class="project-card glass rounded-3xl overflow-hidden border border-transparent hover:border-white/10 transition-all flex flex-col sm:flex-row">
+                <div class="sm:w-48 h-32 sm:h-auto overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&auto=format&fit=crop&q=60" class="w-full h-full object-cover grayscale transition-all duration-700 hover:scale-110">
+                </div>
+                <div class="p-6 flex-1">
+                    <h4 class="font-bold text-lg mb-1">Cyber City: Reckoning</h4>
+                    <p class="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-2">Implemented a modular weapon system and custom data-store wrapper for 5M+ monthly active users.</p>
+                    <div class="flex gap-2 text-blue-500">
+                        <span class="text-[10px] font-mono font-bold px-2 py-1 bg-blue-500/10 rounded uppercase">Framework</span>
+                        <span class="text-[10px] font-mono font-bold px-2 py-1 bg-blue-500/10 rounded uppercase">Backend</span>
+                    </div>
+                </div>
+            </div>
 
-<div class="space-y-4">
+            <!-- Project 2 -->
+            <div class="project-card glass rounded-3xl overflow-hidden border border-transparent hover:border-white/10 transition-all flex flex-col sm:flex-row">
+                <div class="sm:w-48 h-32 sm:h-auto overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=60" class="w-full h-full object-cover grayscale transition-all duration-700 hover:scale-110">
+                </div>
+                <div class="p-6 flex-1">
+                    <h4 class="font-bold text-lg mb-1">Elemental Duels</h4>
+                    <p class="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-2">Optimized hitboxes and VFX emitters for competitive frame-perfect gameplay on mobile.</p>
+                    <div class="flex gap-2 text-blue-500">
+                        <span class="text-[10px] font-mono font-bold px-2 py-1 bg-blue-500/10 rounded uppercase">Luau</span>
+                        <span class="text-[10px] font-mono font-bold px-2 py-1 bg-blue-500/10 rounded uppercase">VFX</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<a href="#" class="glass p-6 rounded-xl block link">
-<svg class="scribble" viewBox="0 0 400 100">
-<path d="M10 60 Q 150 10 300 70 T 390 50"/>
-</svg>
-<div class="label">VAULT</div>
-<div class="title">PAYPAL</div>
-</a>
+        <!-- Services -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="glass p-5 rounded-2xl text-center space-y-2">
+                <h4 class="font-bold text-sm text-blue-400 uppercase tracking-wider">Architecture</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">Scalable game loops and secure engines.</p>
+            </div>
+            <div class="glass p-5 rounded-2xl text-center space-y-2">
+                <h4 class="font-bold text-sm text-blue-400 uppercase tracking-wider">UI/UX</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">Fluid Fusion interfaces with motion design.</p>
+            </div>
+            <div class="glass p-5 rounded-2xl text-center space-y-2">
+                <h4 class="font-bold text-sm text-blue-400 uppercase tracking-wider">Physics</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">Advanced character and vehicle controllers.</p>
+            </div>
+        </section>
 
-<a href="#" class="glass p-6 rounded-xl block link">
-<svg class="scribble" viewBox="0 0 400 100">
-<path d="M20 80 Q 200 20 350 60"/>
-</svg>
-<div class="label">PORTAL</div>
-<div class="title">ROBLOX</div>
-</a>
-
-</div>
-</div>
-
-<script>
-/* PARTICLES (RESTORED) */
-const canvas=document.getElementById('particles');
-const ctx=canvas.getContext('2d');
-canvas.width=innerWidth;
-canvas.height=innerHeight;
-
-let particles=[];
-for(let i=0;i<60;i++){
-  particles.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    s:Math.random()*2,
-    sp:Math.random()*0.5
-  });
-}
-
-function drawParticles(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  particles.forEach(p=>{
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.s,0,Math.PI*2);
-    ctx.fillStyle='rgba(59,130,246,0.6)';
-    ctx.fill();
-
-    p.x-=p.sp;
-    p.y+=p.sp;
-
-    if(p.x<0||p.y>canvas.height){
-      p.x=Math.random()*canvas.width;
-      p.y=0;
-    }
-  });
-
-  requestAnimationFrame(drawParticles);
-}
-drawParticles();
-
-/* PRESENCE + DISCORD */
-const text=document.getElementById('presenceText');
-const dot=document.getElementById('dot');
-
-const ID="1489706305605337109";
-
-async function discord(){
-  try{
-    const r=await fetch(`https://api.lanyard.rest/v1/users/${ID}`);
-    const j=await r.json();
-    const d=j.data;
-
-    if(d.activities.length){
-      text.textContent=d.activities[0].name;
-      dot.className="dot bg-purple-400";
-    }
-  }catch{}
-}
-setInterval(discord,15000);
-discord();
-
-/* TIME */
-setInterval(()=>{
-  const d=new Date();
-  document.getElementById('time').textContent=
-    d.getHours()+":"+d.getMinutes().toString().padStart(2,'0');
-},1000);
-
-/* CURSOR */
-const cursor=document.getElementById('cursor');
-const trail=document.getElementById('trail');
-let mx=0,my=0,px=0,py=0,tx=0,ty=0;
-
-document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY;
-});
-
-function loop(){
-  px+=(mx-px)*0.2;
-  py+=(my-py)*0.2;
-  tx+=(mx-tx)*0.08;
-  ty+=(my-ty)*0.08;
-
-  cursor.style.left=px+'px';
-  cursor.style.top=py+'px';
-  trail.style.left=tx+'px';
-  trail.style.top=ty+'px';
-
-  requestAnimationFrame(loop);
-}
-loop();
-</script>
-
+        <!-- Footer -->
+        <footer class="text-center pt-8 border-t border-white/5 space-y-3">
+            <p class="text-[10px] text-gray-700 font-mono tracking-widest uppercase">Verified Roblox Developer Portfolio © 2026</p>
+        </footer>
+    </div>
 </body>
 </html>
