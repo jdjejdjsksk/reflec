@@ -1,236 +1,334 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reflec | Senior Roblox Engineer Portfolio</title>
+    <title>reflec.xyz | Roblox Architecture</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Space Grotesk', sans-serif;
-            background-color: #080B10;
+            background-color: #080A0F;
             color: white;
             overflow-x: hidden;
+            cursor: none; /* Hide default cursor */
         }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Glassmorphism */
         .glass {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        
-        /* Subtle Background Motion */
-        .bg-glow {
+        .neon-border {
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.1);
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .bg-grid {
+            background-image: radial-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        .scanline {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
-            z-index: -1;
-            animation: pulse 12s infinite alternate ease-in-out;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.05), transparent);
+            animation: scanline 10s linear infinite;
+            pointer-events: none;
+            z-index: 50;
         }
 
-        @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-            100% { transform: translate(-45%, -55%) scale(1.2); opacity: 0.8; }
+        /* Custom Cursor */
+        #cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+        }
+        #cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.15s ease-out;
         }
 
-        .neo-btn {
-            @apply px-6 py-3 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-2;
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
         }
-        
-        .project-card:hover .project-overlay {
+        .reveal.active {
             opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Tooltip style */
+        .copy-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+        .copy-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        a, button {
+            cursor: pointer;
         }
     </style>
 </head>
-<body class="selection:bg-blue-500/30">
+<body class="selection:bg-blue-500/30 bg-grid">
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+    <div class="scanline"></div>
 
-    <!-- Background Glow -->
-    <div class="bg-glow"></div>
+    <!-- Toast Notification -->
+    <div id="toast" class="copy-toast px-6 py-3 bg-blue-600 font-bold text-white rounded-full shadow-2xl flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Username copied!
+    </div>
 
-    <div class="max-w-2xl mx-auto px-6 py-20 space-y-20 relative">
+    <div class="max-w-2xl mx-auto px-6 py-20 space-y-24 relative z-10">
         
-        <!-- Navigation / Header -->
-        <header class="text-center space-y-8">
-            <div class="relative inline-block group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-                <div class="relative w-32 h-32 mx-auto rounded-3xl overflow-hidden border border-white/10">
+        <!-- Header -->
+        <header class="text-center space-y-10 reveal">
+            <div class="relative inline-block">
+                <div class="w-36 h-36 mx-auto rounded-[2.5rem] overflow-hidden neon-border rotate-3 hover:rotate-0 transition-transform duration-500 bg-[#0B0E14]">
                     <img src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?w=400&auto=format&fit=crop&q=60" alt="Avatar" class="w-full h-full object-cover">
                 </div>
-                <div class="absolute -bottom-1 -right-1 bg-green-500 w-5 h-5 rounded-full border-4 border-[#080B10] animate-pulse"></div>
+                <div class="absolute -bottom-1 -right-1 bg-blue-500 w-6 h-6 rounded-full border-4 border-[#080A0F] animate-pulse"></div>
             </div>
 
-            <div class="space-y-3">
-                <h1 class="text-5xl font-bold tracking-tighter">VortexDev</h1>
-                <p class="text-blue-400 font-mono text-sm tracking-[0.2em] uppercase font-bold">Systems Architect & Lead Scripter</p>
+            <div class="space-y-4">
+                <h1 class="text-6xl font-bold tracking-tighter">reflec.xyz</h1>
+                <div class="flex items-center justify-center gap-3">
+                    <span class="h-[1px] w-12 bg-blue-500/30"></span>
+                    <p class="text-blue-400 font-mono text-[10px] tracking-[0.4em] uppercase font-bold">Systems & Experience Architect</p>
+                    <span class="h-[1px] w-12 bg-blue-500/30"></span>
+                </div>
             </div>
 
-            <p class="text-gray-400 text-xl leading-relaxed font-light">
-                Engineering immersive, high-concurrency Roblox worlds since <span class="text-white font-medium italic">2018</span>. I build the systems that drive player retention.
+            <p class="text-gray-400 text-xl leading-relaxed max-w-lg mx-auto font-light">
+                Engineering <span class="text-white font-medium">uncompromising performance</span> for high-scale Roblox titles. Mastering Luau, state-sync, and parallelized logic.
             </p>
 
-            <!-- Main CTAs -->
-            <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-                <a href="https://discord.com/users/prvtocol" class="neo-btn bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.069.069 0 0 0-.032.027C.533 9.048-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.419-2.157 2.419z"/></svg>
-                    Contact on Discord
-                </a>
-                <a href="https://t.me/protecture" class="neo-btn glass hover:bg-white/5 text-gray-300">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                    Telegram Me
+            <div class="grid grid-cols-3 gap-8 py-6 opacity-80">
+                <div class="space-y-1">
+                    <p class="text-3xl font-bold text-white italic">45M+</p>
+                    <p class="text-[9px] text-gray-500 uppercase tracking-widest font-mono">Engagement</p>
+                </div>
+                <div class="space-y-1 border-x border-white/10">
+                    <p class="text-3xl font-bold text-white italic">12k+</p>
+                    <p class="text-[9px] text-gray-500 uppercase tracking-widest font-mono">Concurrency</p>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-3xl font-bold text-white italic">6yrs</p>
+                    <p class="text-[9px] text-gray-500 uppercase tracking-widest font-mono">Tenure</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="copyToClipboard('prvtocol', 'Discord')" class="px-10 py-5 bg-white text-black font-extrabold rounded-2xl hover:bg-blue-400 hover:scale-105 transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.05)] active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Copy Discord
+                </button>
+                <a href="#projects" class="px-10 py-5 glass text-white font-bold rounded-2xl hover:bg-white/10 transition-all flex items-center gap-2 border-white/20">
+                    Explore Work
                 </a>
             </div>
         </header>
 
-        <!-- Proof Metrics Section -->
-        <section class="grid grid-cols-2 sm:grid-cols-4 gap-4 px-2">
-            <div class="text-center p-4 glass rounded-2xl">
-                <span class="block text-2xl font-bold text-white uppercase tracking-tighter">15M+</span>
-                <span class="text-[10px] text-blue-500 font-mono font-bold uppercase">Game Visits</span>
-            </div>
-            <div class="text-center p-4 glass rounded-2xl">
-                <span class="block text-2xl font-bold text-white uppercase tracking-tighter">6+ YRS</span>
-                <span class="text-[10px] text-blue-500 font-mono font-bold uppercase">Experience</span>
-            </div>
-            <div class="text-center p-4 glass rounded-2xl">
-                <span class="block text-2xl font-bold text-white uppercase tracking-tighter">99.9%</span>
-                <span class="text-[10px] text-blue-500 font-mono font-bold uppercase">System Uptime</span>
-            </div>
-            <div class="text-center p-4 glass rounded-2xl">
-                <span class="block text-2xl font-bold text-white uppercase tracking-tighter">50+</span>
-                <span class="text-[10px] text-blue-500 font-mono font-bold uppercase">Commissions</span>
-            </div>
-        </section>
-
-        <!-- Skills Row -->
-        <section class="space-y-6">
-            <h3 class="text-xs font-mono font-bold text-gray-500 uppercase tracking-[0.3em] text-center">Core Technical stack</h3>
+        <!-- Technical Stack -->
+        <section class="space-y-8 reveal">
+            <h3 class="text-[10px] font-mono text-gray-500 uppercase tracking-[0.5em] text-center">Environment Stack</h3>
             <div class="flex flex-wrap justify-center gap-3">
-                <span class="px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-xs font-bold uppercase tracking-wider">Luau Engine</span>
-                <span class="px-3 py-1 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider">Knit Framework</span>
-                <span class="px-3 py-1 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider">Lag Compensation</span>
-                <span class="px-3 py-1 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider">DataStore2</span>
-                <span class="px-3 py-1 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider">UI Fusion</span>
-                <span class="px-3 py-1 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider">GLS Lighting</span>
+                <span class="px-5 py-2.5 glass rounded-xl text-xs font-bold text-blue-400 shadow-inner">Parallel Luau</span>
+                <span class="px-5 py-2.5 glass rounded-xl text-xs font-bold text-blue-400 shadow-inner">Knit v1.4</span>
+                <span class="px-5 py-2.5 glass rounded-xl text-xs font-bold text-blue-400 shadow-inner">ECS-Driven</span>
+                <span class="px-5 py-2.5 glass rounded-xl text-xs font-bold text-blue-400 shadow-inner">Fusion State</span>
+                <span class="px-5 py-2.5 glass rounded-xl text-xs font-bold text-blue-400 shadow-inner">DataStore2</span>
             </div>
         </section>
 
-        <!-- Case Studies -->
-        <section class="space-y-8">
-            <div class="flex items-end justify-between px-2">
-                <h3 class="text-2xl font-bold tracking-tight italic">Case Studies</h3>
-                <span class="text-[10px] font-mono text-gray-600">SELECTED WORKS / 2024</span>
+        <!-- Production Work -->
+        <section id="projects" class="space-y-10">
+            <div class="flex items-center justify-between px-2 reveal">
+                <h3 class="text-2xl font-bold flex items-center gap-3 tracking-tight">
+                    <span class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>
+                    </span>
+                    Flagship Ops
+                </h3>
             </div>
             
             <div class="space-y-6">
-                <!-- Project 1 -->
-                <a href="#" class="group block relative project-card glass rounded-[2.5rem] overflow-hidden border border-transparent hover:border-blue-500/30 transition-all duration-500">
-                    <div class="flex flex-col sm:flex-row">
-                        <div class="sm:w-56 h-48 sm:h-auto overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&auto=format&fit=crop&q=60" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <!-- Case 1 -->
+                <div class="project-card glass rounded-[2.5rem] overflow-hidden transition-all duration-500 group border-white/5 reveal">
+                    <div class="flex flex-col sm:flex-row min-h-[300px]">
+                        <div class="sm:w-64 h-56 sm:h-auto overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&auto=format&fit=crop&q=60" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0">
                         </div>
-                        <div class="p-8 flex-1 space-y-4">
-                            <div class="flex justify-between items-start">
-                                <h4 class="text-2xl font-bold group-hover:text-blue-400 transition-colors">Neo-Chrome Racing</h4>
-                                <svg class="text-gray-600 group-hover:text-blue-400 transition-all group-hover:translate-x-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                        <div class="p-10 flex-1 flex flex-col justify-between">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="text-3xl font-black italic tracking-tighter">NEON NEXUS RP</h4>
+                                    <span class="bg-green-500/10 text-green-400 text-[9px] font-mono font-bold px-3 py-1 rounded-full uppercase">Deployed</span>
+                                </div>
+                                <p class="text-gray-400 text-base leading-relaxed font-light">
+                                    Led Technical Direction for a top-tier RP title. Built a distributed inventory system supporting 1,000+ persistent items with zero-overhead server reconciliation.
+                                </p>
                             </div>
-                            <p class="text-gray-400 leading-relaxed text-sm">Developed a custom physics-based vehicle controller and a backend race-sync system handling 50k+ daily races.</p>
-                            <div class="flex gap-3">
-                                <span class="text-[9px] font-bold px-2 py-1 border border-white/10 rounded tracking-tighter uppercase text-gray-500">Physics Engine</span>
-                                <span class="text-[9px] font-bold px-2 py-1 border border-white/10 rounded tracking-tighter uppercase text-gray-500">Backend API</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Project 2 -->
-                <a href="#" class="group block relative project-card glass rounded-[2.5rem] overflow-hidden border border-transparent hover:border-blue-500/30 transition-all duration-500">
-                    <div class="flex flex-col sm:flex-row">
-                        <div class="sm:w-56 h-48 sm:h-auto overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=60" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                        </div>
-                        <div class="p-8 flex-1 space-y-4">
-                            <div class="flex justify-between items-start">
-                                <h4 class="text-2xl font-bold group-hover:text-blue-400 transition-colors">Battle-Ax Arena</h4>
-                                <svg class="text-gray-600 group-hover:text-blue-400 transition-all group-hover:translate-x-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
-                            </div>
-                            <p class="text-gray-400 leading-relaxed text-sm">Engineered frame-perfect combat hitboxes and a modular ability pipeline using functional programming in Luau.</p>
-                            <div class="flex gap-3">
-                                <span class="text-[9px] font-bold px-2 py-1 border border-white/10 rounded tracking-tighter uppercase text-gray-500">Combat Systems</span>
-                                <span class="text-[9px] font-bold px-2 py-1 border border-white/10 rounded tracking-tighter uppercase text-gray-500">Optimized VFX</span>
+                            <div class="flex gap-3 mt-8">
+                                <span class="text-[9px] font-mono bg-blue-500/10 px-4 py-2 rounded-lg text-blue-400 uppercase tracking-widest font-bold">Networking</span>
+                                <span class="text-[9px] font-mono bg-blue-500/10 px-4 py-2 rounded-lg text-blue-400 uppercase tracking-widest font-bold">SQL Sync</span>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <!-- Testimonials -->
-        <section class="space-y-6">
-            <h3 class="text-center text-xs font-mono font-bold text-gray-600 uppercase tracking-[0.4em]">Developer Endorsements</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="glass p-6 rounded-3xl space-y-3 italic">
-                    <p class="text-sm text-gray-400">"Vortex is the most technically capable scripter I've hired. His systems are clean, scalable, and built for production."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-[10px] font-bold">JD</div>
-                        <span class="text-xs font-bold text-gray-300">Jay_Dev, Studio Lead</span>
                     </div>
                 </div>
-                <div class="glass p-6 rounded-3xl space-y-3 italic">
-                    <p class="text-sm text-gray-400">"Transformed our game's performance. Our framerate doubled on mobile after Vortex's optimization pass."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold">SM</div>
-                        <span class="text-xs font-bold text-gray-300">Sky_Master, Project Manager</span>
+
+                <!-- Case 2 -->
+                <div class="project-card glass rounded-[2.5rem] overflow-hidden transition-all duration-500 group border-white/5 reveal">
+                    <div class="flex flex-col sm:flex-row min-h-[300px]">
+                        <div class="sm:w-64 h-56 sm:h-auto overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=60" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                        </div>
+                        <div class="p-10 flex-1 flex flex-col justify-between">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="text-3xl font-black italic tracking-tighter">KINETIC ARENA</h4>
+                                    <span class="bg-blue-500/10 text-blue-400 text-[9px] font-mono font-bold px-3 py-1 rounded-full uppercase">Staging</span>
+                                </div>
+                                <p class="text-gray-400 text-base leading-relaxed font-light">
+                                    Developed a custom 2.5D combat engine with active hitbox detection and dynamic animation overrides using Parallel Luau on actor threads.
+                                </p>
+                            </div>
+                            <div class="flex gap-3 mt-8">
+                                <span class="text-[9px] font-mono bg-blue-500/10 px-4 py-2 rounded-lg text-blue-400 uppercase tracking-widest font-bold">Physics</span>
+                                <span class="text-[9px] font-mono bg-blue-500/10 px-4 py-2 rounded-lg text-blue-400 uppercase tracking-widest font-bold">Threading</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Ready to Hire CTA -->
-        <section class="relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[3rem] blur opacity-25"></div>
-            <div class="relative glass bg-[#0C0F16] rounded-[3rem] p-10 text-center space-y-8">
+        <!-- Final CTA -->
+        <section class="pt-20 reveal">
+            <div class="glass p-16 rounded-[4rem] space-y-10 relative overflow-hidden text-center border-blue-500/10">
+                <div class="absolute inset-0 bg-blue-500/5 blur-[120px] -z-10"></div>
                 <div class="space-y-4">
-                    <h2 class="text-4xl font-bold tracking-tight">Ready to build the next front-page title?</h2>
-                    <p class="text-gray-400 max-w-sm mx-auto">I'm currently accepting selective long-term contracts and studio leadership roles.</p>
+                    <h2 class="text-5xl font-black tracking-tighter">Scale your studio.</h2>
+                    <p class="text-gray-400 text-lg">Currently reviewing Q3 contracts and executive roles.</p>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="https://discord.com/users/prvtocol" class="neo-btn bg-white text-black hover:bg-gray-200">
-                        Discord Message
-                    </a>
-                    <a href="mailto:contact@vortexdev.roblox" class="neo-btn border border-white/10 hover:bg-white/5">
-                        Email Inquiry
-                    </a>
-                </div>
-                
-                <div class="pt-4 flex flex-col items-center gap-2">
-                    <p class="text-[10px] font-mono text-gray-600 uppercase tracking-widest">Available for hire immediately</p>
-                    <div class="flex gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500/50"></span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500/25"></span>
-                    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
+                    <button onclick="copyToClipboard('prvtocol', 'Discord')" class="p-5 glass rounded-2xl hover:bg-white/5 transition-all text-left flex flex-col gap-1 group active:scale-95">
+                        <span class="text-[10px] font-mono text-blue-400 uppercase tracking-widest">Discord Handle</span>
+                        <span class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">prvtocol</span>
+                    </button>
+                    <button onclick="copyToClipboard('@protecture', 'Telegram')" class="p-5 glass rounded-2xl hover:bg-white/5 transition-all text-left flex flex-col gap-1 group active:scale-95">
+                        <span class="text-[10px] font-mono text-sky-400 uppercase tracking-widest">Telegram ID</span>
+                        <span class="text-lg font-bold text-white group-hover:text-sky-400 transition-colors">@protecture</span>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="text-center pt-8 border-t border-white/5 space-y-4">
-            <div class="flex justify-center gap-6 text-gray-600">
-                <a href="#" class="hover:text-white transition-colors">Roblox Profile</a>
-                <a href="#" class="hover:text-white transition-colors">GitHub</a>
-                <a href="#" class="hover:text-white transition-colors">DevForum</a>
+        <!-- Meta -->
+        <footer class="text-center py-10 space-y-4 opacity-40 reveal">
+            <div class="flex justify-center gap-12 text-[9px] font-mono tracking-widest uppercase font-bold">
+                <span>Init 2018</span>
+                <span>Verified Studio Partner</span>
+                <span>Luau Expert</span>
             </div>
-            <p class="text-[10px] text-gray-800 font-mono tracking-widest uppercase">© VORTEX SYSTEMS ARCHITECTURE MMXXVI</p>
+            <p class="text-[8px] text-gray-600">reflec.xyz ARCHITECTURAL PORTFOLIO © 2026. REDACTED PERMISSION GRANTED.</p>
         </footer>
-
     </div>
+
+    <script>
+        // Custom Cursor Logic
+        const dot = document.getElementById('cursor-dot');
+        const outline = document.getElementById('cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // Simple follow for dot
+            dot.style.left = `${posX}px`;
+            dot.style.top = `${posY}px`;
+            dot.style.transform = `translate(-50%, -50%)`;
+
+            // Delayed follow for outline
+            outline.style.left = `${posX}px`;
+            outline.style.top = `${posY}px`;
+            outline.style.transform = `translate(-50%, -50%)`;
+        });
+
+        // Add hovering state to cursor
+        const interactables = document.querySelectorAll('a, button, .project-card');
+        interactables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                outline.style.transform = `translate(-50%, -50%) scale(1.5)`;
+                outline.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                outline.style.transform = `translate(-50%, -50%) scale(1)`;
+                outline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Clipboard Logic
+        function copyToClipboard(text, platform) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ${platform} copied!`;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        // Scroll Reveal Logic
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    </script>
 </body>
 </html>
