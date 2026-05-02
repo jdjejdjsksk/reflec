@@ -1,479 +1,572 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>reflec.xyz | Roblox Infrastructure Expert</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reflec.xyz | Roblox Infrastructure Expert</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rbx-bg': '#191b1d',
+            'rbx-header': '#232527',
+            'rbx-card': '#2b2d2f',
+            'rbx-blue': '#00a2ff',
+            'rbx-subtext': '#adb0b3',
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #191b1d;
+      color: white;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection {
+      background-color: rgba(0, 162, 255, 0.3);
+    }
+
+    .rbx-topbar-item {
+      height: 100%;
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .rbx-topbar-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .rbx-sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      color: #adb0b3;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+    .rbx-sidebar-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+    .rbx-sidebar-active {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .rbx-game-card {
+      display: block;
+      cursor: pointer;
+    }
+    .rbx-game-card > * + * {
+      margin-top: 0.375rem;
+    }
+
+    .rbx-game-thumb {
+      aspect-ratio: 1 / 1;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background-color: #232527;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .rbx-game-title {
+      font-size: 0.75rem;
+      line-height: 1rem;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Group hover simulation */
+    .group:hover .group-hover\:text-rbx-blue {
+      color: #00a2ff;
+    }
+
+    /* Modals & Animations */
+    .modal-overlay {
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .modal-content {
+      animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .modal-overlay.closing {
+      animation: fadeOut 0.2s ease-in forwards;
+    }
+    .modal-content.closing {
+      animation: scaleDown 0.2s ease-in forwards;
+    }
+
+    @keyframes slideUpFade {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-up {
+      opacity: 0;
+      animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    @keyframes slideRightFade {
+      0% { opacity: 0; transform: translateX(-20px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    .animate-slide-right {
+      opacity: 0;
+      animation: slideRightFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
 
-    <script>
-        window.FramerMotion = window.FramerMotion || window.Motion;
-        
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Space Grotesk"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-                    },
-                    colors: {
-                        blue: {
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    @keyframes slideDownFade {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-down {
+      opacity: 0;
+      animation: slideDownFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
 
-    <style>
-        body {
-            background-color: #080A0F;
-            color: white;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-            padding: 0;
-            margin: 0;
-            cursor: none;
-        }
-
-        @media (hover: none) {
-            body { cursor: auto; }
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .neon-border {
-            border-color: rgba(59, 130, 246, 0.4);
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.1);
-        }
-
-        .scanline {
-            width: 100%;
-            height: 100px;
-            z-index: 99;
-            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(59,130,246,0.02) 50%, rgba(0,0,0,0) 100%);
-            opacity: 0.1;
-            position: fixed;
-            bottom: 100%;
-            pointer-events: none;
-            animation: scanline 8s linear infinite;
-        }
-
-        @keyframes scanline {
-            0% { bottom: 100%; }
-            100% { bottom: -100px; }
-        }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #080A0F; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(59,130,246,0.5); }
-
-        .selection-blue::selection { background: rgba(59,130,246,0.3); }
-    </style>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes scaleDown {
+      from { opacity: 1; transform: scale(1) translateY(0); }
+      to { opacity: 0; transform: scale(0.95) translateY(10px); }
+    }
+  </style>
 </head>
-<body class="selection-blue">
-    <div id="root"></div>
+<body>
 
-    <script type="text/babel">
-        const { useState, useEffect, useCallback, useRef } = React;
-        const { motion, AnimatePresence, useScroll, useSpring } = FramerMotion;
+  <!-- App Container -->
+  <div class="min-h-screen font-sans">
+    
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 h-10 md:h-12 bg-rbx-header flex items-center justify-between px-3 z-[100] border-b border-white/5 animate-slide-down">
+      <div class="flex items-center gap-1 md:gap-4 h-full">
+        <button id="sidebar-toggle" class="p-2 hover:bg-white/5 rounded cursor-pointer transition-colors">
+          <i data-lucide="menu" class="w-4 h-4 text-white"></i>
+        </button>
+        <div class="flex items-center gap-0.5 h-full">
+          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center select-none cursor-pointer group" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <div class="text-white font-black text-2xl md:text-3xl leading-none group-active:scale-95 transition-transform">R</div>
+          </div>
+          <nav class="hidden lg:flex items-center h-full">
+             <div class="rbx-topbar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">Discover</div>
+             <div class="rbx-topbar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">Marketplace</div>
+             <div class="rbx-topbar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">Create</div>
+             <div class="rbx-topbar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">Robux</div>
+          </nav>
+        </div>
+      </div>
 
-        const LucideIcon = ({ name, size = 24, className = "" }) => {
-            useEffect(() => {
-                if (window.lucide) lucide.createIcons();
-            });
-            const LucideName = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-            return <i data-lucide={LucideName} className={className} style={{ width: size, height: size, display: 'inline-block' }}></i>;
-        };
+      <div class="flex items-center gap-1 h-full">
+        <div class="hidden sm:flex items-center bg-[#111214] border border-white/10 rounded px-3 py-1 w-48 md:w-64 gap-2 focus-within:border-rbx-blue transition-all group">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-rbx-subtext group-focus-within:text-white"></i>
+          <input type="text" placeholder="Search" class="bg-transparent outline-none text-xs w-full text-white placeholder:text-rbx-subtext" />
+        </div>
+        
+        <div class="flex items-center h-full">
+          <div class="rbx-topbar-item flex items-center px-2"><i data-lucide="settings" class="w-4.5 h-4.5 text-rbx-subtext"></i></div>
+          <div class="rbx-topbar-item flex items-center px-2"><i data-lucide="bell" class="w-4.5 h-4.5 text-rbx-subtext"></i></div>
+          <div class="rbx-topbar-item flex items-center gap-1.5 px-3">
+             <div class="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center text-[10px] text-black font-black">R</div>
+             <span class="text-xs font-bold font-mono">12.4M+</span>
+          </div>
+          <div onclick="window.open('https://kyocheats.xyz', '_blank')" class="ml-2 w-8 h-8 rounded-full overflow-hidden cursor-pointer hover:brightness-110 border border-white/10">
+            <img src="https://www.roblox.com/headshot-thumbnail/image?userId=4949902995&width=420&height=420&format=png" alt="Avatar" class="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+    </header>
 
-        const CustomCursor = () => {
-            const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-            const [isHovering, setIsHovering] = useState(false);
+    <div class="flex pt-10 md:pt-12">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="fixed left-0 top-12 bottom-0 w-48 bg-rbx-header p-2 transition-transform duration-300 z-50 translate-x-0">
+        <nav class="space-y-0.5">
+          <div class="rbx-sidebar-item rbx-sidebar-active" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="home" class="w-4.5 h-4.5 text-white"></i>
+            <span>Home</span>
+          </div>
+          <div class="rbx-sidebar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="user" class="w-4.5 h-4.5"></i>
+            <span>Profile</span>
+          </div>
+          <div class="rbx-sidebar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="message-circle" class="w-4.5 h-4.5"></i>
+            <span>Messages</span>
+          </div>
+          <div class="rbx-sidebar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="users" class="w-4.5 h-4.5"></i>
+            <span>Friends</span>
+          </div>
+          <div class="rbx-sidebar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="backpack" class="w-4.5 h-4.5"></i>
+            <span>Avatar</span>
+          </div>
+          <div class="rbx-sidebar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="layout-grid" class="w-4.5 h-4.5"></i>
+            <span>Inventory</span>
+          </div>
+          <div class="rbx-sidebar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="arrow-left-right" class="w-4.5 h-4.5"></i>
+            <span>Trade</span>
+          </div>
+          <div class="rbx-sidebar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="store" class="w-4.5 h-4.5"></i>
+            <span>Marketplace</span>
+          </div>
+          <div class="rbx-sidebar-item" onclick="window.open('https://kyocheats.xyz', '_blank')">
+            <i data-lucide="compass" class="w-4.5 h-4.5"></i>
+            <span>Discover</span>
+          </div>
+        </nav>
+      </aside>
 
-            useEffect(() => {
-                const handleMouseMove = (e) => setMousePosition({ x: e.clientX, y: e.clientY });
-                const handleMouseOver = (e) => {
-                    const target = e.target;
-                    setIsHovering(
-                        target.tagName === "A" || target.tagName === "BUTTON" ||
-                        target.closest("a") || target.closest("button") ||
-                        target.classList.contains("interactive")
-                    );
-                };
-                window.addEventListener("mousemove", handleMouseMove);
-                window.addEventListener("mouseover", handleMouseOver);
-                return () => {
-                    window.removeEventListener("mousemove", handleMouseMove);
-                    window.removeEventListener("mouseover", handleMouseOver);
-                };
-            }, []);
+      <!-- Main Content -->
+      <main id="main-content" class="flex-1 transition-all duration-300 ml-48">
+        <div class="max-w-6xl mx-auto p-4 md:p-8 space-y-12">
+          
+          <!-- Greeting -->
+          <section class="flex items-center gap-6 animate-slide-up" style="animation-delay: 100ms;">
+             <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white/5 shadow-xl bg-rbx-header">
+               <img src="https://www.roblox.com/headshot-thumbnail/image?userId=4949902995&width=420&height=420&format=png" class="w-full h-full object-cover" />
+             </div>
+             <div class="space-y-1">
+               <h2 class="text-3xl md:text-4xl font-black">Hello, reflec!</h2>
+             </div>
+          </section>
 
-            return (
-                <React.Fragment>
-                    <motion.div
-                        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-blue-500/50 pointer-events-none z-[9999] hidden md:block"
-                        animate={{
-                            x: mousePosition.x - 16,
-                            y: mousePosition.y - 16,
-                            scale: isHovering ? 2 : 1,
-                            backgroundColor: isHovering ? "rgba(59,130,246,0.1)" : "rgba(59,130,246,0)",
-                        }}
-                        transition={{ type: "spring", damping: 30, stiffness: 400, mass: 0.5 }}
-                    />
-                    <motion.div
-                        className="fixed top-0 left-0 w-1.5 h-1.5 bg-blue-500 rounded-full pointer-events-none z-[9999] hidden md:block"
-                        animate={{ x: mousePosition.x - 3, y: mousePosition.y - 3 }}
-                        transition={{ type: "spring", damping: 50, stiffness: 1000, mass: 0.1 }}
-                    />
-                </React.Fragment>
-            );
-        };
+          <!-- Socials -->
+          <section class="space-y-4 animate-slide-up" style="animation-delay: 150ms;">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-black">Socials (4)</h3>
+              <div onclick="window.open('https://kyocheats.xyz', '_blank')" class="text-sm font-bold text-rbx-blue hover:underline cursor-pointer">See All</div>
+            </div>
+            <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+              <div id="socials-container" class="flex gap-4"></div>
+            </div>
+          </section>
 
-        const PROJECTS = [
-            {
-                id: 1,
-                title: "NEON NEXUS RP",
-                description: "Lead Systems Architect. Designed a server-authoritative inventory & economy system supporting 10k+ concurrent entities with optimized memory overhead.",
-                image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&auto=format&fit=crop&q=60",
-                tags: ["Systems", "Optimization", "UI/UX"],
-                label: "LIVE"
-            },
-            {
-                id: 2,
-                title: "KINETIC ARENA",
-                description: "Built a fully custom physics-based combat engine from scratch. Includes active hitboxes, complex animation states, and lag-compensated networking.",
-                image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=60",
-                tags: ["Physics", "Combat", "Auth"],
-                label: "ALPHA"
-            }
-        ];
+          <!-- Projects -->
+          <section class="space-y-6 animate-slide-up" style="animation-delay: 200ms;">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-black italic uppercase tracking-wider">Featured Projects</h3>
+              <div onclick="window.open('https://kyocheats.xyz', '_blank')" class="text-sm font-bold text-rbx-blue hover:underline cursor-pointer">Explore More</div>
+            </div>
+            <div id="projects-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+              <!-- Projects generated by JS -->
+            </div>
+          </section>
 
-        function App() {
-            const [copiedUsername, setCopiedUsername] = useState(null);
-            const [hasEntered, setHasEntered] = useState(false);
-            const { scrollYProgress } = useScroll();
-            const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+        </div>
 
-            useEffect(() => {
-                if (window.lucide) lucide.createIcons();
-            });
-
-            const copyToClipboard = useCallback((text, label) => {
-                navigator.clipboard.writeText(text);
-                setCopiedUsername(label);
-                setTimeout(() => setCopiedUsername(null), 2000);
-            }, []);
-
-            return (
-                <div className="min-h-screen font-sans overflow-x-hidden selection:bg-blue-500/30">
-                    <CustomCursor />
-
-                    <AnimatePresence>
-                        {!hasEntered && (
-                            <motion.div
-                                initial={{ opacity: 1 }}
-                                exit={{ opacity: 0, scale: 1.1 }}
-                                transition={{ duration: 0.8, ease: "circOut" }}
-                                className="fixed inset-0 z-[1000] bg-[#080A0F] flex flex-col items-center justify-center p-6"
-                            >
-                                <div className="scanline"></div>
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="text-center space-y-12"
-                                >
-                                    <div className="space-y-4">
-                                        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter italic text-white">reflec.xyz</h1>
-                                        <p className="font-mono text-xs tracking-[0.5em] text-blue-500 uppercase">System Ready</p>
-                                    </div>
-
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={() => setHasEntered(true)}
-                                        className="group relative px-10 py-5 bg-white text-black font-bold rounded-2xl transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)]"
-                                    >
-                                        <div className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <span className="relative flex items-center gap-3 text-lg italic uppercase font-black">
-                                            Enter
-                                        </span>
-                                    </motion.button>
-
-                                    <div className="pt-12 flex items-center justify-center gap-8 opacity-20">
-                                        <div className="flex flex-col items-center">
-                                            <div className="w-[1px] h-12 bg-white" />
-                                            <span className="text-[10px] font-mono mt-2">ID: M-FLX-GB26</span>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    <motion.div
-                        className="fixed top-0 left-0 right-0 h-1 bg-blue-500 origin-left z-[100]"
-                        style={{ scaleX }}
-                    />
-
-                    <div className="scanline"></div>
-
-                    <div className="max-w-3xl mx-auto px-6 py-24 space-y-24 relative z-10">
-
-                        {/* Hero */}
-                        <motion.header
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="text-center space-y-10"
-                        >
-                            <div className="relative inline-block text-center">
-                                <motion.div
-                                    whileHover={{ rotate: 0, scale: 1.05 }}
-                                    initial={{ rotate: 3 }}
-                                    className="w-40 h-40 mx-auto rounded-[3rem] overflow-hidden neon-border bg-[#0B0E14] transition-all duration-500"
-                                >
-                                    <img
-                                        src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?w=400&auto=format&fit=crop&q=60"
-                                        alt="Profile"
-                                        className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-                                    />
-                                </motion.div>
-                                <div className="absolute -bottom-1 -right-1 bg-blue-500 w-7 h-7 rounded-full border-4 border-[#080A0F] animate-pulse" />
-                            </div>
-
-                            <div className="space-y-4">
-                                <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-6xl font-bold tracking-tight italic">
-                                    reflec.xyz
-                                </motion.h1>
-                                <div className="flex items-center justify-center gap-3">
-                                    <span className="h-[1px] w-12 bg-blue-500/50"></span>
-                                    <p className="text-blue-400 font-mono text-xs tracking-[0.4em] uppercase">ROBLOX INFRASTRUCTURE EXPERT</p>
-                                    <span className="h-[1px] w-12 bg-blue-500/50"></span>
-                                </div>
-                            </div>
-
-                            <p className="text-gray-400 text-xl leading-relaxed max-w-xl mx-auto font-light">
-                                Crafting <span className="text-white font-medium">highly-performant</span> Luau frameworks and state-of-the-art combat engines for front-page experiences.
-                            </p>
-
-                            <div className="flex flex-wrap justify-center gap-5">
-                                <button
-                                    onClick={() => copyToClipboard("prvtocol", "discord")}
-                                    className="px-10 py-5 bg-white text-black font-bold rounded-2xl transition-all flex items-center gap-3 shadow-[0_0_30px_rgba(255,255,255,0.1)] active:scale-95 group relative overflow-hidden"
-                                >
-                                    <AnimatePresence mode="wait">
-                                        {copiedUsername === "discord" ? (
-                                            <motion.div key="check" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} className="flex items-center gap-2">
-                                                <LucideIcon name="CheckCircle2" size={20} className="text-green-600" />
-                                                <span>Copied!</span>
-                                            </motion.div>
-                                        ) : (
-                                            <motion.div key="content" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} className="flex items-center gap-2">
-                                                <LucideIcon name="MessageSquare" size={20} />
-                                                <span>Hire via Discord</span>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </button>
-                                <a href="#projects" className="px-10 py-5 glass font-bold rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3 border-white/20 active:scale-95">
-                                    Explore Systems
-                                </a>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-8 py-8 border-y border-white/5 max-w-md mx-auto">
-                                <div className="space-y-1">
-                                    <p className="text-3xl font-bold">45M+</p>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Visits</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-3xl font-bold">12k+</p>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Peak CCU</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-3xl font-bold">6yrs</p>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">XP</p>
-                                </div>
-                            </div>
-                        </motion.header>
-
-                        {/* Projects */}
-                        <section id="projects" className="space-y-10">
-                            <div className="flex items-center justify-between px-2">
-                                <h3 className="text-3xl font-bold italic flex items-center gap-4">
-                                    <span className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-inner">
-                                        <LucideIcon name="Code2" size={24} />
-                                    </span>
-                                    Case Files
-                                </h3>
-                            </div>
-
-                            <div className="space-y-6">
-                                {PROJECTS.map((project, idx) => (
-                                    <motion.div
-                                        key={project.id}
-                                        initial={{ opacity: 0, x: idx % 2 === 0 ? -40 : 40 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true, margin: "-100px" }}
-                                        transition={{ duration: 0.6, ease: "easeOut" }}
-                                        className="group relative glass rounded-[2.5rem] overflow-hidden hover:bg-white/[0.04] transition-all border-white/10"
-                                    >
-                                        <div className="flex flex-col md:flex-row h-full">
-                                            <div className="md:w-64 h-56 md:h-auto overflow-hidden relative">
-                                                <img
-                                                    src={project.image}
-                                                    className="w-full h-full object-cover brightness-50 group-hover:brightness-100 transition-all duration-700 group-hover:scale-110"
-                                                    alt={project.title}
-                                                />
-                                                <div className="absolute top-4 left-4">
-                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold font-mono tracking-widest ${project.label === 'LIVE' ? 'bg-green-500 text-black' : 'bg-blue-500 text-white'}`}>
-                                                        {project.label}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="p-10 flex-1 flex flex-col justify-between space-y-6">
-                                                <div className="space-y-4">
-                                                    <div className="flex justify-between items-start">
-                                                        <h4 className="text-3xl font-bold tracking-tight uppercase italic">{project.title}</h4>
-                                                        <LucideIcon name="ExternalLink" size={24} className="text-gray-600 group-hover:text-blue-500 transition-colors" />
-                                                    </div>
-                                                    <p className="text-gray-400 leading-relaxed text-lg font-light">{project.description}</p>
-                                                </div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {project.tags.map(tag => (
-                                                        <span key={tag} className="text-[11px] font-mono font-medium px-4 py-1.5 bg-blue-500/10 text-blue-400 rounded-full border border-blue-500/20">
-                                                            {tag}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </section>
-
-                        {/* Skills */}
-                        <motion.section
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            className="space-y-8"
-                        >
-                            <p className="text-xs font-mono text-gray-500 uppercase tracking-[0.5em] text-center">Protocol Stack</p>
-                            <div className="flex flex-wrap justify-center gap-4">
-                                {["Frameworks (Knit/ECS/Custom)", "Networking (Modular)", "Data Management", "Complex Physics", "Performance Auth", "Fusion UI"].map((skill, index) => (
-                                    <motion.span
-                                        key={skill}
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="px-6 py-3 glass rounded-2xl text-sm font-medium hover:border-blue-500/40 transition-colors"
-                                    >
-                                        {skill}
-                                    </motion.span>
-                                ))}
-                            </div>
-                        </motion.section>
-
-                        {/* Contact */}
-                        <section className="pt-20">
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                className="glass p-16 rounded-[4rem] text-center space-y-10 relative overflow-hidden group"
-                            >
-                                <div className="absolute inset-0 bg-blue-500/5 blur-[120px] -z-10 group-hover:bg-blue-500/10 transition-all duration-1000" />
-                                <div className="space-y-4">
-                                    <h2 className="text-5xl font-bold tracking-tight italic">Initiate Session?</h2>
-                                    <p className="text-gray-400 text-lg">Currently available for high-fidelity studio integrations & premium commissions.</p>
-                                </div>
-
-                                <div className="flex flex-col items-center gap-8">
-                                    <div className="flex gap-6">
-                                        <button
-                                            onClick={() => copyToClipboard("prvtocol", "dc-footer")}
-                                            className="p-6 glass rounded-3xl hover:text-white transition-all hover:border-blue-500 group/btn relative"
-                                            title="Copy Discord"
-                                        >
-                                            <LucideIcon name="MessageSquare" size={32} className="text-gray-500 group-hover/btn:text-blue-400" />
-                                            <AnimatePresence>
-                                                {copiedUsername === "dc-footer" && (
-                                                    <motion.span
-                                                        initial={{ opacity: 0, y: 10 }}
-                                                        animate={{ opacity: 1, y: -45 }}
-                                                        exit={{ opacity: 0 }}
-                                                        className="absolute left-1/2 -translate-x-1/2 text-[10px] bg-blue-500 text-white px-2 py-1 rounded"
-                                                    >
-                                                        Copied!
-                                                    </motion.span>
-                                                )}
-                                            </AnimatePresence>
-                                        </button>
-                                        <button
-                                            onClick={() => copyToClipboard("@protecture", "tg-footer")}
-                                            className="p-6 glass rounded-3xl hover:text-white transition-all hover:border-sky-500 group/btn relative"
-                                            title="Copy Telegram"
-                                        >
-                                            <LucideIcon name="Send" size={32} className="text-gray-500 group-hover:text-sky-400" />
-                                            <AnimatePresence>
-                                                {copiedUsername === "tg-footer" && (
-                                                    <motion.span
-                                                        initial={{ opacity: 0, y: 10 }}
-                                                        animate={{ opacity: 1, y: -45 }}
-                                                        exit={{ opacity: 0 }}
-                                                        className="absolute left-1/2 -translate-x-1/2 text-[10px] bg-sky-500 text-white px-2 py-1 rounded"
-                                                    >
-                                                        Copied!
-                                                    </motion.span>
-                                                )}
-                                            </AnimatePresence>
-                                        </button>
-                                    </div>
-
-                                    <div className="space-y-2 opacity-50">
-                                        <p className="text-xs font-mono tracking-widest text-gray-500 uppercase">Secure Lines Open</p>
-                                        <p className="text-sm font-mono text-white">me@reflec.xyz</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </section>
-
-                        {/* Footer */}
-                        <footer className="text-center py-12 border-t border-white/5 space-y-4">
-                            <div className="flex justify-center gap-12 text-[11px] font-mono text-gray-600 uppercase tracking-[0.3em]">
-                                <span>ROBLOX PLATFORM</span>
-                                <span>EXPERIENCE 2026</span>
-                                <span>TECHNICAL PORTFOLIO</span>
-                            </div>
-                            <p className="text-[10px] text-gray-800">reflec.xyz © Designed for peak performance and visual impact.</p>
-                        </footer>
-                    </div>
+        <!-- Footer -->
+        <footer class="mt-24 p-8 border-t border-white/5 bg-rbx-header/50">
+           <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+             <div class="flex flex-col items-center md:items-start gap-4">
+                <div class="w-10 h-10 bg-white flex items-center justify-center rounded-lg shadow-lg">
+                  <span class="text-black font-black text-2xl select-none">R</span>
                 </div>
-            );
-        }
+                <p class="text-[11px] font-bold text-rbx-subtext uppercase tracking-[0.3em] opacity-40">Connecting to Roblox...</p>
+             </div>
+             <div class="flex flex-wrap justify-center gap-12">
+                <div class="space-y-4 text-center md:text-left">
+                  <h5 class="text-[10px] font-black text-rbx-subtext uppercase tracking-widest">Protocol</h5>
+                  <div class="flex flex-col gap-2 text-xs font-bold text-white/40">
+                    <span onclick="window.open('https://kyocheats.xyz', '_blank')" class="hover:text-white cursor-pointer transition-colors">Discord</span>
+                    <span onclick="window.open('https://kyocheats.xyz', '_blank')" class="hover:text-white cursor-pointer transition-colors">Telegram</span>
+                    <span onclick="window.open('https://kyocheats.xyz', '_blank')" class="hover:text-white cursor-pointer transition-colors">Twitter</span>
+                  </div>
+                </div>
+                <div class="space-y-4 text-center md:text-left">
+                  <h5 class="text-[10px] font-black text-rbx-subtext uppercase tracking-widest">Utility</h5>
+                  <div class="flex flex-col gap-2 text-xs font-bold text-white/40">
+                    <span onclick="window.open('https://kyocheats.xyz', '_blank')" class="hover:text-white cursor-pointer transition-colors">About</span>
+                    <span onclick="window.open('https://kyocheats.xyz', '_blank')" class="hover:text-white cursor-pointer transition-colors">Contact</span>
+                    <span onclick="window.open('https://kyocheats.xyz', '_blank')" class="hover:text-white cursor-pointer transition-colors">Career</span>
+                  </div>
+                </div>
+             </div>
+           </div>
+           <div class="max-w-6xl mx-auto mt-12 flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] font-black text-rbx-subtext uppercase tracking-[0.2em] opacity-30">
+             <p>© 2026 ROBLOX CORPORATION. ALL RIGHTS RESERVED.</p>
+             <div class="flex gap-8">
+               <span>Privacy</span>
+               <span>Terms</span>
+             </div>
+           </div>
+        </footer>
+      </main>
+    </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+  </div> <!-- End App Container -->
+
+  <!-- Modal Container -->
+  <div id="modal-container"></div>
+
+  <script>
+    const portfolioLinks = [
+      {
+        id: 1,
+        title: "KyoCheats",
+        url: "https://kyocheats.xyz",
+        image: "https://images.unsplash.com/photo-1550745679-33d0163339bf?w=800&auto=format&fit=crop&q=60",
+        rating: "99%",
+        active: "v4.0",
+        description: "The ultimate destination for game enhancements and community-driven scripts. Premium quality, undetected, and always updated.",
+        developer: "reflec",
+        releaseDate: "2024"
+      },
+      {
+        id: 2,
+        title: "CP Bio",
+        url: "https://e-z.bio/cp",
+        image: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&auto=format&fit=crop&q=60",
+        rating: "100%",
+        active: "LIVE",
+        description: "Centralized hub for all my identities and projects. Check out my full social reach and contact details here.",
+        developer: "reflec",
+        releaseDate: "2024"
+      },
+      {
+        id: 3,
+        title: "KyoXYZ",
+        url: "https://kyocheats.xyz",
+        image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&auto=format&fit=crop&q=60",
+        rating: "95%",
+        active: "BETA",
+        description: "Experimental branch for upcoming modules and secure injection protocols. Testing grounds for the next generation of KyoCheats.",
+        developer: "reflec",
+        releaseDate: "2024"
+      }
+    ];
+
+    const socialLinks = [
+      { name: "Gmail", handle: "me@reflec.xyz", image: "https://cdn-icons-png.flaticon.com/512/732/732200.png", action: "copy", link: "me@reflec.xyz" },
+      { name: "Discord", handle: "prvtocol", image: "https://cdn-icons-png.flaticon.com/512/3670/3670157.png", action: "copy", link: "prvtocol" },
+      { name: "Telegram", handle: "protecture", image: "https://cdn-icons-png.flaticon.com/512/2111/2111646.png", action: "url", link: "https://t.me/protecture" },
+      { name: "Roblox", handle: "bloqsurveys", image: "https://www.roblox.com/headshot-thumbnail/image?userId=4949902995&width=420&height=420&format=png", action: "copy-url", link: "bloqsurveys", redirect: "https://www.roblox.com/users/4949902995/profile" },
+    ];
+
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    let isSidebarOpen = true;
+
+    sidebarToggle.addEventListener('click', () => {
+      isSidebarOpen = !isSidebarOpen;
+      if (isSidebarOpen) {
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        mainContent.classList.remove('ml-0');
+        mainContent.classList.add('ml-48');
+      } else {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        mainContent.classList.remove('ml-48');
+        mainContent.classList.add('ml-0');
+      }
+    });
+
+    window.handleSocialClick = (action, link, redirect, idx) => {
+      if (action === 'url') {
+        window.open(link, '_blank');
+      } else if (action === 'copy' || action === 'copy-url') {
+        const fallbackCopy = () => {
+          const textArea = document.createElement("textarea");
+          textArea.value = link;
+          document.body.appendChild(textArea);
+          textArea.select();
+          try {
+            document.execCommand('copy');
+            alert('Copied: ' + link);
+          } catch (err) {
+            alert('Failed to copy. Link: ' + link);
+          }
+          document.body.removeChild(textArea);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(link).then(() => {
+            alert('Copied: ' + link);
+            if (action === 'copy-url' && redirect) {
+              setTimeout(() => window.open(redirect, '_blank'), 500);
+            }
+          }).catch(() => {
+            fallbackCopy();
+            if (action === 'copy-url' && redirect) {
+              setTimeout(() => window.open(redirect, '_blank'), 500);
+            }
+          });
+        } else {
+          fallbackCopy();
+          if (action === 'copy-url' && redirect) {
+            setTimeout(() => window.open(redirect, '_blank'), 500);
+          }
+        }
+      }
+    };
+
+    const socialsContainer = document.getElementById('socials-container');
+    socialsContainer.innerHTML = socialLinks.map((link, idx) => `
+      <div class="flex flex-col items-center gap-2 group cursor-pointer min-w-[90px] animate-slide-right" style="animation-delay: ${200 + idx * 50}ms;" onclick="handleSocialClick('${link.action}', '${link.link}', '${link.redirect || ''}', ${idx})">
+        <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-white/5 bg-rbx-header group-hover:brightness-110 group-hover:scale-105 group-active:scale-95 transition-all p-1 duration-300 relative">
+          <div class="w-full h-full rounded-full overflow-hidden bg-white/5 flex items-center justify-center relative">
+            <img src="${link.image}" class="w-full h-full object-cover p-1" alt="${link.name}" />
+          </div>
+        </div>
+        <div class="text-center group-hover:text-rbx-blue transition-colors">
+          <p class="text-[11px] font-black uppercase tracking-tighter w-full">${link.name}</p>
+          <p class="text-[9px] font-bold text-rbx-subtext w-full">${link.handle}</p>
+        </div>
+      </div>
+    `).join('');
+
+    const projectsContainer = document.getElementById('projects-container');
+    
+    const projectCardsHtml = portfolioLinks.map((item, idx) => `
+      <div class="rbx-game-card group animate-slide-up" style="animation-delay: ${250 + idx * 100}ms;" onclick="openModal(${idx})">
+        <div class="rbx-game-thumb">
+           <img src="${item.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${item.title}" />
+           <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <i data-lucide="play" class="w-8 h-8 text-white fill-white ml-1"></i>
+           </div>
+        </div>
+        <div class="px-1">
+          <h4 class="rbx-game-title uppercase italic">${item.title}</h4>
+          <div class="flex items-center gap-3 text-[10px] font-bold text-rbx-subtext">
+            <div class="flex items-center gap-1">
+               <i data-lucide="thumbs-up" class="w-3 h-3 text-green-500"></i>
+               <span>${item.rating}</span>
+            </div>
+            <div class="flex items-center gap-1">
+               <i data-lucide="shield-check" class="w-3 h-3 ${item.active === 'OFFLINE' ? 'text-red-500' : 'text-rbx-blue'}"></i>
+               <span>${item.active}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    const fillerCardsHtml = Array(3).fill(0).map(() => `
+      <div class="rbx-game-card opacity-20 hover:opacity-40 transition-opacity" onclick="window.open('https://kyocheats.xyz', '_blank')">
+        <div class="rbx-game-thumb bg-rbx-header"></div>
+        <div class="h-3 w-3/4 bg-white/5 rounded mt-2"></div>
+      </div>
+    `).join('');
+
+    projectsContainer.innerHTML = projectCardsHtml + fillerCardsHtml;
+
+    lucide.createIcons();
+
+    const modalContainer = document.getElementById('modal-container');
+
+    window.openModal = (idx) => {
+      const item = portfolioLinks[idx];
+      modalContainer.innerHTML = `
+        <div id="modal-bg" class="modal-overlay fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="closeModal()">
+          <div id="modal-panel" onclick="event.stopPropagation()" class="modal-content bg-rbx-card w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl relative border border-white/10">
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-10 p-2 bg-black/40 hover:bg-black/60 rounded-full transition-colors text-white">
+              <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <div class="aspect-video relative overflow-hidden">
+              <img src="${item.image}" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-gradient-to-t from-rbx-card via-transparent"></div>
+            </div>
+
+            <div class="p-6 md:p-10 space-y-6">
+              <div class="space-y-2">
+                <h2 class="text-3xl md:text-5xl font-black italic uppercase tracking-tight leading-none">${item.title}</h2>
+                <div class="flex items-center gap-4 text-xs md:text-sm font-bold text-rbx-subtext">
+                  <span class="text-rbx-blue uppercase tracking-widest">By ${item.developer}</span>
+                  <span>•</span>
+                  <span class="uppercase tracking-widest">Active Status: ${item.active}</span>
+                </div>
+              </div>
+
+              <p class="text-rbx-subtext text-sm md:text-base leading-relaxed font-medium">
+                ${item.description}
+              </p>
+
+              <div class="flex items-center gap-12 py-6 border-y border-white/5">
+                <div class="text-center md:text-left">
+                  <p class="text-[10px] font-black text-rbx-subtext uppercase tracking-widest mb-1.5 opacity-50">Reliability</p>
+                  <div class="flex items-center gap-2 font-black text-2xl">
+                    <i data-lucide="thumbs-up" class="w-6 h-6 text-green-500"></i>
+                    ${item.rating}
+                  </div>
+                </div>
+                <div class="text-center md:text-left">
+                  <p class="text-[10px] font-black text-rbx-subtext uppercase tracking-widest mb-1.5 opacity-50">Status</p>
+                  <div class="flex items-center gap-2 font-black text-2xl uppercase italic text-rbx-blue">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    ${item.active}
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <button class="flex-1 bg-rbx-blue hover:brightness-110 py-5 text-2xl font-black rounded-xl text-white flex items-center justify-center gap-2 transition-all active:scale-95 shadow-[0_0_30px_rgba(0,162,255,0.4)]" onclick="window.open('${item.url}', '_blank')">
+                  <i data-lucide="play" class="w-7 h-7 fill-white ml-1"></i>
+                  VISIT PROJECT
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeModal = () => {
+      const bg = document.getElementById('modal-bg');
+      const panel = document.getElementById('modal-panel');
+      if (bg && panel) {
+        bg.classList.add('closing');
+        panel.classList.add('closing');
+        setTimeout(() => {
+          modalContainer.innerHTML = '';
+          document.body.style.overflow = '';
+        }, 200);
+      }
+    };
+  </script>
 </body>
 </html>
+
