@@ -1,0 +1,8 @@
+{
+  "name": "Mythic Marketplace",
+  "description": "A futuristic monochrome single-page website for the Mythic Marketplace Discord server.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
